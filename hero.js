@@ -1,4 +1,4 @@
-/* 
+/*
 
   The only function that is required in this file is the "move" function
 
@@ -9,8 +9,8 @@
 
   The "move" function must return "North", "South", "East", "West", or "Stay"
   (Anything else will be interpreted by the game as "Stay")
-  
-  The "move" function should accept two arguments that the website will be passing in: 
+
+  The "move" function should accept two arguments that the website will be passing in:
     - a "gameData" object which holds all information about the current state
       of the battle
 
@@ -91,18 +91,51 @@ var move = function(gameData, helpers) {
   });
   var distanceToHealthWell = healthWellStats.distance;
   var directionToHealthWell = healthWellStats.direction;
-  
 
-  if (myHero.health < 40) {
+  var nearlyDeadEnemy = helpers.findNearlyDeadEnemy( gameData );
+  var distanceToNearlyDeadEnemy = nearlyDeadEnemy.distance;
+
+  var nearlyDeadAlly = helpers.findNearestNearlyDeadAlly( gameData );
+  var distanceToNearlyDeadAlly = nearlyDeadAlly.distance;
+
+
+  if ( myHero.health < 30 ) {
     //Heal no matter what if low health
     return directionToHealthWell;
-  } else if (myHero.health < 100 && distanceToHealthWell === 1) {
+
+  } else if ( distanceToNearlyDeadEnemy === 1 ) {
+    //kill adjacent enemies if they will die in one shot
+    return nearlyDeadEnemy.direction;
+
+  } else if ( myHero.health <= 40 && distanceToHealthWell === 1 ) {
     //Heal if you aren't full health and are close to a health well already
     return directionToHealthWell;
-  } else {
+
+  } else if ( distanceToNearlyDeadAlly === 1) {
+    // heal nearly dead adjacent ally
+    return nearlyDeadAlly.direction;
+
+  } else if( helpers.findNearestNonTeamDiamondMine(gameData) ) {
     //If healthy, go capture a diamond mine!
     return helpers.findNearestNonTeamDiamondMine(gameData);
+
+  } else if ( helpers.findNearestWeakerEnemy(gameData) ) {
+    // go after weakest enemy
+    return helpers.findNearestWeakerEnemy(gameData)
+
+  } else if ( myHero.health < 100 ) {
+    //go heal if not full health
+    return directionToHealthWell;
+
+  } else if ( helpers.findNearestEnemy(gameData) ) {
+    // kill nearest enemy
+    return helpers.findNearestEnemy(gameData);
+
+  } else {
+    // go heal
+    return directionToHealthWell;
   }
+
 };
 
 // // The "Selfish Diamond Miner"

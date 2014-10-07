@@ -215,6 +215,21 @@ helpers.findNearestWeakerEnemy = function(gameData) {
   //be interpreted as "Stay" by the game object
   return pathInfoObject.direction;
 };
+// JOSH: give more data about enemey
+helpers.findNearlyDeadEnemy = function(gameData) {
+  var hero = gameData.activeHero;
+  var board = gameData.board;
+
+  //Get the path info object
+  var pathInfoObject = helpers.findNearestObjectDirectionAndDistance(board, hero, function(enemyTile) {
+    return enemyTile.type === 'Hero' && enemyTile.team !== hero.team && enemyTile.health <= 20;
+  });
+
+  //Return the direction that needs to be taken to achieve the goal
+  //If no weaker enemy exists, will simply return undefined, which will
+  //be interpreted as "Stay" by the game object
+  return pathInfoObject;
+};
 
 // Returns the direction of the nearest enemy
 // (or returns false if there are no accessible enemies)
@@ -244,6 +259,19 @@ helpers.findNearestTeamMember = function(gameData) {
 
   //Return the direction that needs to be taken to achieve the goal
   return pathInfoObject.direction;
+};
+
+helpers.findNearestNearlyDeadAlly = function(gameData) {
+  var hero = gameData.activeHero;
+  var board = gameData.board;
+
+  //Get the path info object
+  var pathInfoObject = helpers.findNearestObjectDirectionAndDistance(board, hero, function(heroTile) {
+    return heroTile.type === 'Hero' && heroTile.team === hero.team && heroTile.health < 30;
+  });
+
+  //Return the direction that needs to be taken to achieve the goal
+  return pathInfoObject;
 };
 
 module.exports = helpers;
