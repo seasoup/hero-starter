@@ -89,52 +89,74 @@ var move = function(gameData, helpers) {
       return true;
     }
   });
+
+  // get stats for nearest ally
+  var allyStats = helpers.findNearestObjectDirectionAndDistance(gameData.board, myHero, function(heroTile) {
+    return heroTile.type === 'Hero' && heroTile.team === myHero.team;
+  });
+
+  // get stats for nearest enemy
+  var enemyStats = helpers.findNearestObjectDirectionAndDistance(gameData.board, myHero, function(heroTile) {
+    return heroTile.type === 'Hero' && heroTile.team !== myHero.team;
+  });
+
   var distanceToHealthWell = healthWellStats.distance;
   var directionToHealthWell = healthWellStats.direction;
 
   var nearlyDeadEnemy = helpers.findNearlyDeadEnemy( gameData );
-  var distanceToNearlyDeadEnemy = nearlyDeadEnemy.distance;
+  var distanceToNearlyDeadEnemy = nearlyDeadEnemy.distance || 10;
 
   var nearlyDeadAlly = helpers.findNearestNearlyDeadAlly( gameData );
-  var distanceToNearlyDeadAlly = nearlyDeadAlly.distance;
+  var distanceToNearlyDeadAlly = nearlyDeadAlly.distance || 10;
 
+  var nearestNonTeamMine = helpers.findNearestNonTeamDiamondMine(gameData);
+  var distanceToNearestNonTeamMine = nearestNonTeamMine.distance || 10;
 
-  if ( myHero.health < 30 ) {
-    //Heal no matter what if low health
+  var nearestNotMine = helpers.findNearestDiamondMine(gameData);
+  var distanceToNearestNotMine = nearestNonTeamMine.distance || 10;
+
+  var nearestBones = helpers.findNearestBones(gameData);
+  var distanceToNearestBones = nearestBones.distance || 10;
+
+  if ( myHero.health <= 30 ) {
+    if ( distanceToHealthWell === 1 ) { return directionToHealthWell; }
+    if ( distanceToNearlyDeadEnemy === 1 ) { return nearlyDeadEnemy.direction; }
+    if ( distanceToNearlyDeadEnemy === 2 && nearlyDeadEnemy.health <= 20 ) { return nearlyDeadEnemy.direction; }
+    if ( enemyStats.distance == 2 ) { return helpers.reverse( enemyStats.direction ); }
     return directionToHealthWell;
 
-  } else if ( distanceToNearlyDeadEnemy === 1 ) {
-    //kill adjacent enemies if they will die in one shot
-    return nearlyDeadEnemy.direction;
-
-  } else if ( myHero.health <= 40 && distanceToHealthWell === 1 ) {
-    //Heal if you aren't full health and are close to a health well already
+  } else if ( myHero.health <= 60 ) {
+    if ( distanceToNearlyDeadEnemy === 1 ) { return nearlyDeadEnemy.direction; }
+    if ( distanceToNearlyDeadEnemy === 2 && nearlyDeadEnemy.health <= 20 ) { return nearlyDeadEnemy.direction; }
+    if ( distanceToHealthWell === 1 ) { return directionToHealthWell; }
+    if ( enemyStats.distance == 1 ) { return enemyStats.direction; }
+    if ( distanceToNearestBones == 1 ) { return helpers.findNearestBones(gameData); }
+    if ( enemyStats.distance == 2 ) { return helpers.reverse( enemyStats.direction ); }
     return directionToHealthWell;
-
-  } else if ( distanceToNearlyDeadAlly === 1) {
-    // heal nearly dead adjacent ally
-    return nearlyDeadAlly.direction;
-
-  } else if( helpers.findNearestNonTeamDiamondMine(gameData) ) {
-    //If healthy, go capture a diamond mine!
-    return helpers.findNearestNonTeamDiamondMine(gameData);
-
-  } else if ( helpers.findNearestWeakerEnemy(gameData) ) {
-    // go after weakest enemy
-    return helpers.findNearestWeakerEnemy(gameData)
 
   } else if ( myHero.health < 100 ) {
-    //go heal if not full health
+    if ( distanceToNearlyDeadEnemy === 1 ) { return nearlyDeadEnemy.direction; }
+    if ( distanceToNearlyDeadEnemy === 2 && nearlyDeadEnemy.health <= 20 ) { return nearlyDeadEnemy.direction; }
+    if ( enemyStats.distance == 1 ) { return enemyStats.direction; }
+    if ( distanceToHealthWell === 1 ) { return directionToHealthWell; }
+    if ( distanceToNearestBones == 1 ) { return helpers.findNearestBones(gameData); }
+    if ( enemyStats.distance == 2 ) { return helpers.reverse( enemyStats.direction ); }
+    if ( nearestNonTeamMine ) { return nearestNonTeamMine.direction; }
+    if ( nearestNotMine ) { return nearestNotMine.direction; }
     return directionToHealthWell;
 
-  } else if ( helpers.findNearestEnemy(gameData) ) {
-    // kill nearest enemy
-    return helpers.findNearestEnemy(gameData);
-
-  } else {
-    // go heal
+  } else if ( myHero.health === 100 ) {
+    if ( distanceToNearlyDeadEnemy === 1 ) { return nearlyDeadEnemy.direction; }
+    if ( distanceToNearlyDeadEnemy === 2 && nearlyDeadEnemy.health <= 20 ) { return nearlyDeadEnemy.direction; }
+    if ( enemyStats.distance == 1 ) { return enemyStats.direction; }
+    if ( distanceToNearestBones == 1 ) { return helpers.findNearestBones(gameData); }
+    if ( nearestNonTeamMine ) { return nearestNonTeamMine.direction; }
+    if ( nearestNotMine ) { return nearestNotMine.direction; }
+    if ( enemyStats.distance == 2 ) { return helpers.reverse( enemyStats.direction ); }
     return directionToHealthWell;
+
   }
+  return directionToHealthWell;
 
 };
 

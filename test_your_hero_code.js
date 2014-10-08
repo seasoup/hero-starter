@@ -26,14 +26,23 @@ var Game = require('./game_logic/Game.js');
 var heroMoveFunction = require('./hero.js');
 
 //The move function ("brain") the practice enemy will use
-var enemyMoveFunction = function(gameData, helpers) {
+var enemyMoveFunction = function(gameData, helpers, enemy) {
   //Move in a random direction
-  var choices = ['North', 'South', 'East', 'West'];
-  return choices[Math.floor(Math.random()*4)];
+  //var choices = ['North', 'South', 'East', 'West'];
+  //return choices[Math.floor(Math.random()*4)];
+
+   if (enemy.health < 50) {
+     return helpers.findNearestHealthWell(gameData);
+   } else if ( helpers.findNearestWeakerEnemy(gameData) ) {
+     return helpers.findNearestWeakerEnemy(gameData);
+   } else {
+     return helpers.findNearestEnemy(gameData);
+   }
+
 }
 
 //Makes a new game with a 5x5 board
-var game = new Game(5);
+var game = new Game(10);
 
 //Add a health well in the middle of the board
 game.addHealthWell(2,2);
@@ -44,9 +53,13 @@ game.addDiamondMine(2,3);
 
 //Add your hero in the top left corner of the map (team 0)
 game.addHero(0, 0, 'MyHero', 0);
+game.addHero(0, 4, 'Hero 2', 0);
+game.addHero(2, 0, 'Hero 3', 0);
 
-//Add an enemy hero in the bottom left corner of the map (team 1)
-game.addHero(4, 4, 'Enemy', 1);
+//Add an enemy heroes (team 1)
+game.addHero(4, 0, 'Enemy 1', 1);
+game.addHero(4, 2, 'Enemy 2', 1);
+game.addHero(4, 3, 'Enemy 3', 1);
 
 console.log('About to start the game!  Here is what the board looks like:');
 
@@ -66,7 +79,7 @@ for (var i=0; i<turnsToPlay; i++) {
     //Ask your hero brain which way it wants to move
     direction = heroMoveFunction(game, helpers);
   } else {
-    direction = enemyMoveFunction(game, helpers);
+    direction = enemyMoveFunction(game, helpers, hero);
   }
   console.log('-----');
   console.log('Turn ' + i + ':');
