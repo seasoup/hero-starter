@@ -130,7 +130,7 @@ var move = function(gameData, helpers) {
     if ( distanceToNearlyDeadEnemy === 2 && nearlyDeadEnemy.health <= 20 ) { return nearlyDeadEnemy.direction; }
     if ( distanceToHealthWell === 1 ) { return directionToHealthWell; }
     if ( enemyStats.distance == 1 ) { return enemyStats.direction; }
-    if ( distanceToNearestBones == 1 ) { return helpers.findNearestBones(gameData); }
+    if ( distanceToNearestBones == 1 ) { return nearestBones.direction; }
     if ( enemyStats.distance == 2 ) { return helpers.reverse( enemyStats.direction ); }
     return directionToHealthWell;
 
@@ -139,8 +139,8 @@ var move = function(gameData, helpers) {
     if ( distanceToNearlyDeadEnemy === 2 && nearlyDeadEnemy.health <= 20 ) { return nearlyDeadEnemy.direction; }
     if ( enemyStats.distance == 1 ) { return enemyStats.direction; }
     if ( distanceToHealthWell === 1 ) { return directionToHealthWell; }
-    if ( distanceToNearestBones == 1 ) { return helpers.findNearestBones(gameData); }
-    if ( enemyStats.distance == 2 ) { return helpers.reverse( enemyStats.direction ); }
+    if ( distanceToNearestBones == 1 ) { return nearestBones.direction; }
+    if ( enemyStats.distance == 2 && enemyStats.health > myHero.health) { return helpers.reverse( enemyStats.direction ); }
     if ( nearestNonTeamMine ) { return nearestNonTeamMine.direction; }
     if ( nearestNotMine ) { return nearestNotMine.direction; }
     return directionToHealthWell;
@@ -151,8 +151,9 @@ var move = function(gameData, helpers) {
     if ( enemyStats.distance == 1 ) { return enemyStats.direction; }
     if ( distanceToNearestBones == 1 ) { return helpers.findNearestBones(gameData); }
     if ( nearestNonTeamMine ) { return nearestNonTeamMine.direction; }
+    if ( nearestBones ) { return nearestBones.direction; }
     if ( nearestNotMine ) { return nearestNotMine.direction; }
-    if ( enemyStats.distance == 2 ) { return helpers.reverse( enemyStats.direction ); }
+
     return directionToHealthWell;
 
   }
