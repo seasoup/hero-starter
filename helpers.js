@@ -1,11 +1,303 @@
 var helpers = {};
 
+var Zones = function( gameData, point ) {
+  var dft = point ? point[0] : gameData.activeHero.distanceFromTop,
+      dfl = point ? point[1] : gameData.activeHero.distanceFromLeft,
+      board = gameData.board;
+
+    this.zone_tiles = [];
+    this.zones = [];
+    this.point = point;
+    this.enemyCount = 0;
+    this.allyCount = 0;
+
+    this.center = [ dft, dfl ];
+
+    this.zone_tiles[0] = [];
+//    console.log(point, dft, dfl-1,helpers.validCoordinates( board, dft, dfl-1 ) );
+    if ( helpers.validCoordinates( board, dft, dfl-1 ) ) {
+      this.zone_tiles[0].push( board.tiles[dft][dfl-1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+1, dfl ) ) {
+      this.zone_tiles[0].push( board.tiles[dft+1][dfl] );
+    }
+
+    if ( helpers.validCoordinates( board, dft, dfl+1 ) ) {
+      this.zone_tiles[0].push( board.tiles[dft][dfl+1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-1, dfl ) ) {
+      this.zone_tiles[0].push( board.tiles[dft-1][dfl] );
+    }
+
+    this.zone_tiles[1] = [];
+    if ( helpers.validCoordinates( board, dft, dfl-2 ) ) {
+      this.zone_tiles[1].push( board.tiles[dft][dfl-2] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+1, dfl-1 ) ) {
+      this.zone_tiles[1].push( board.tiles[dft+1][dfl-1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+2, dfl ) ) {
+      this.zone_tiles[1].push( board.tiles[dft+2][dfl] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+1, dfl+1 ) ) {
+      this.zone_tiles[1].push( board.tiles[dft+1][dfl+1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft, dfl+2 ) ) {
+      this.zone_tiles[1].push( board.tiles[dft][dfl+2] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-1, dfl+1 ) ) {
+      this.zone_tiles[1].push( board.tiles[dft-1][dfl+1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-2, dfl ) ) {
+      this.zone_tiles[1].push( board.tiles[dft-2][dfl] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-1, dfl-1 ) ) {
+      this.zone_tiles[1].push( board.tiles[dft-1][dfl-1] );
+    }
+
+    this.zone_tiles[2] = [];
+    if ( helpers.validCoordinates( board, dft, dfl-3 ) ) {
+      this.zone_tiles[2].push( board.tiles[dft][dfl-3] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+1, dfl-2 ) ) {
+      this.zone_tiles[2].push( board.tiles[dft+1][dfl-2] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+2, dfl-1 ) )  {
+      this.zone_tiles[2].push( board.tiles[dft+2][dfl-1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+3, dfl ) )  {
+      this.zone_tiles[2].push( board.tiles[dft+3][dfl] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+2, dfl+1 ) )  {
+      this.zone_tiles[2].push( board.tiles[dft+2][dfl+1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft+1, dfl+2 ) )  {
+      this.zone_tiles[2].push( board.tiles[dft+1][dfl+2] );
+    }
+
+    if ( helpers.validCoordinates( board, dft, dfl+3 ) )  {
+      this.zone_tiles[2].push( board.tiles[dft][dfl+3] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-1, dfl+2 ) )  {
+      this.zone_tiles[2].push( board.tiles[dft-1][dfl+2] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-2, dfl+1 ) )  {
+      this.zone_tiles[2].push( board.tiles[dft-2][dfl+1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-3, dfl ) )  {
+      this.zone_tiles[2].push( board.tiles[dft-3][dfl] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-2, dfl-1 ) )  {
+      this.zone_tiles[2].push( board.tiles[dft-2][dfl-1] );
+    }
+
+    if ( helpers.validCoordinates( board, dft-1, dfl-2 ) ) {
+      this.zone_tiles[2].push( board.tiles[dft-1][dfl-2] );
+    }
+
+    for ( var zone_idx = 0; zone_idx < this.zone_tiles.length; zone_idx++ ) {
+      for ( var tile_idx = 0; tile_idx < this.zone_tiles[ zone_idx ].length; tile_idx++ ) {
+        tile = this.zone_tiles[ zone_idx ][ tile_idx ];
+        this.zones[ zone_idx ] = this.zones[ zone_idx ] || {};
+
+        this.zones[ zone_idx ][ tile.type ] = this.zones[ zone_idx ][ tile.type ] || 0;
+        this.zones[ zone_idx ][ tile.type ]++;
+
+        if ( tile.type == "Hero" ) {
+          if ( tile.subType == gameData.activeHero.subType ) {
+            this.zones[ zone_idx ][ "Ally" ] = this.zones[ zone_idx ][ "Ally" ] || 0;
+            this.zones[ zone_idx ][ "Ally" ]++;
+            this.allyCount;
+          } else {
+            this.zones[ zone_idx ][ "Enemy" ] = this.zones[ zone_idx ][ "Enemy" ] || 0;
+            this.zones[ zone_idx ][ "Enemy" ]++;
+            this.enemyCount++;
+            if ( tile.health == 100 ) {
+              this.zones[ zone_idx ][ "UndamagedEnemy" ] = this.zones[ zone_idx ][ "UndamagedEnemy" ] || 0;
+              this.zones[ zone_idx ][ "UndamagedEnemy" ]++;
+            } else if ( tile.health >= 80 ) {
+              this.zones[ zone_idx ][ "NearlyUndamagedEnemy" ] = this.zones[ zone_idx ][ "NearlyUndamagedEnemy" ] || 0;
+              this.zones[ zone_idx ][ "NearlyUndamagedEnemy" ]++;
+            } else if ( tile.health >= 60 ) {
+              this.zones[ zone_idx ][ "NearlyDamagedEnemy" ] = this.zones[ zone_idx ][ "NearlyDamagedEnemy" ] || 0;
+              this.zones[ zone_idx ][ "NearlyDamagedEnemy" ]++;
+            } else if ( tile.health >= 40 ) {
+              this.zones[ zone_idx ][ "DamagedEnemy" ] = this.zones[ zone_idx ][ "DamagedEnemy" ] || 0;
+              this.zones[ zone_idx ][ "DamagedEnemy" ]++;
+            } else if ( tile.health == 30 ) {
+              this.zones[ zone_idx ][ "KillableEnemy" ] = this.zones[ zone_idx ][ "KillableEnemy" ] || 0;
+              this.zones[ zone_idx ][ "KillableEnemy" ]++;
+            } else {
+              this.zones[ zone_idx ][ "EasilyKillableEnemy" ] = this.zones[ zone_idx ][ "EasilyKillableEnemy" ] || 0;
+              this.zones[ zone_idx ][ "EasilyKillableEnemy" ]++;
+            }
+
+          }
+        } else if ( tile.type == "DiamondMine" ) {
+          if ( ! tile.owner ) {
+            this.zones[ zone_idx ][ "UnownedMine" ] = this.zones[ zone_idx ][ "UnownedMine" ] || 0;
+            this.zones[ zone_idx ][ "UnownedMine" ]++;
+          } else if ( tile.owner.id == gameData.activeHero.id ) {
+            this.zones[ zone_idx ][ "MyMine" ] = this.zones[ zone_idx ][ "MyMine" ] || 0;
+            this.zones[ zone_idx ][ "MyMine" ]++;
+          } else if ( tile.owner.subType == gameData.activeHero.subType ) {
+            this.zones[ zone_idx ][ "AllyMine" ] = this.zones[ zone_idx ][ "AllyMine" ] || 0;
+            this.zones[ zone_idx ][ "AllyMine" ]++;
+          } else if ( tile.owner.subType != gameData.activeHero.subType ) {
+            this.zones[ zone_idx ][ "EnemyMine" ] = this.zones[ zone_idx ][ "EnemyMine" ] || 0;
+            this.zones[ zone_idx ][ "EnemyMine" ]++;
+          }
+
+        }
+      }
+    }
+  };
+
+
 // Returns false if the given coordinates are out of range
 helpers.validCoordinates = function(board, distanceFromTop, distanceFromLeft) {
   return (!(distanceFromTop < 0 || distanceFromLeft < 0 ||
       distanceFromTop > board.lengthOfSide - 1 || distanceFromLeft > board.lengthOfSide - 1));
 };
 
+helpers.getDirectionTo = function ( gameData, target ) {
+  var myHero = gameData.activeHero,
+      leftiness = myHero.distanceFromLeft - target.distanceFromLeft,
+      topiness = myHero.distanceFromTop - target.distanceFromTop,
+
+      north = getTileNearby( gameData.board, myHero.distanceFromTop, myHero.distanceFromLeft, "North" ),
+      south = getTileNearby( gameData.board, myHero.distanceFromTop, myHero.distanceFromLeft, "South" ),
+      east = getTileNearby( gameData.board, myHero.distanceFromTop, myHero.distanceFromLeft, "East" ),
+      west = getTileNearby( gameData.board, myHero.distanceFromTop, myHero.distanceFromLeft, "West" )
+
+      smartMove = helpers.smartMove;
+
+  if ( leftiness >= 0 && topiness >= 0 ) {
+    if ( leftiness - topiness > 0 ) {
+      if ( smartMove( gameData, "North" ) ) {
+        return "North";
+      }
+    } else {
+      if ( smartMove( gameData, "West" ) ) {
+        return "West";
+      }
+    }
+  }
+
+  if (leftiness <= 0 && topiness >= 0 ) {
+    if ( -leftiness - topiness > 0 ) {
+      if ( smartMove( gameData, "North" ) ) {
+        return "North";
+      }
+    } else {
+      if ( smartMove( gameData, "East" ) ) {
+        return "East";
+      }
+    }
+  }
+
+  if (leftiness >= 0 && topiness <= 0 ) {
+    if ( leftiness + topiness > 0 ) {
+      if ( smartMove( gameData, "South" ) ) {
+        return "South";
+      }
+    } else {
+      if ( smartMove( gameData, "West" ) ) {
+        return "West";
+      }
+    }
+
+  }
+
+  if (leftiness <= 0 && topiness <= 0 ) {
+    if ( -leftiness + topiness > 0 ) {
+      if ( smartMove( gameData, "South" ) ) {
+        return "South";
+      }
+    } else {
+      if ( smartMove( gameData, "East" ) ) {
+        return "East";
+      }
+    }
+  }
+
+};
+
+helpers.smartMove = function ( gameData, direction ) {
+  var board = gameData.board,
+      dft = gameData.activeHero.distanceFromTop,
+      dfl = gameData.activeHero.distanceFromLeft,
+      tile = helpers.getTileNearby(board, dft, dfl, direction),
+      rated_tile = helpers.rateTile( gameData, direction );
+
+  if ( gameData.activeHero.health <= 20 ) {
+    if ( tile.type == "DiamondMine" ) {
+      return false;
+    }
+  }
+
+  if ( rated_tile.overall > 0 ) {
+    return false;
+  }
+
+  return true;
+};
+
+  helpers.healthLevel = function ( gameData ) {
+    var hero = gameData.activeHero;
+
+    return Math.round( hero.health / 20 );
+  };
+
+  helpers.rateTile = function ( gameData, point ) {
+    var good_score=0, bad_score=0, overall_score=0, damage=0,
+        hero = gameData.activeHero,
+        health_level = helpers.healthLevel( gameData ),
+        zones = new Zones( gameData, point);//[point.distanceFromTop, point.distanceFromLeft] );
+
+    // right next to tile
+    bad_score += ( ( zones.zones[0].Enemy || 0 ) * ( 5 - health_level ) );
+    bad_score += ( ( zones.zones[1].Enemy/2 || 0 ) * ( 5 - health_level ) );
+    bad_score += ( ( zones.zones[2].Enemy/3 || 0 ) * ( 5 - health_level ) );
+
+    good_score += ( ( zones.zones[0].EasilyKillableEnemy || 0 ) * health_level );
+    good_score += ( ( zones.zones[0].KillableEnemy || 0 ) * health_level );
+    good_score += ( ( zones.zones[0].Bones || 0 ) );
+    good_score += ( ( zones.zones[0].Ally - 1 || 0 ) );
+    good_score += ( ( zones.zones[0].DiamondMine || 0 ) * 2 );
+    good_score += ( ( zones.zones[0].HealthWell || 0 ) * ( 7 - health_level ) );
+    good_score += ( ( zones.zones[1].HealthWell/2 || 0 ) * ( 6 - health_level ) );
+    good_score += ( ( zones.zones[2].HealthWell/3 || 0 ) * ( 5 - health_level ) );
+
+    damage += ( ( ( zones.zones[0].Enemy || 0 ) - ( zones.zones[0].EasilyKillableEnemy || 0 ) ) * 30 );
+    damage += ( ( zones.zones[1].Enemy || 0 ) * 20 );
+
+    return {
+      good: good_score,
+      bad: bad_score,
+      damage: damage,
+      overall: good_score - bad_score,
+      zones: zones
+    }
+  };
 // Returns the tile [direction] (North, South, East, or West) of the given X/Y coordinate
 helpers.getTileNearby = function(board, distanceFromTop, distanceFromLeft, direction) {
 
@@ -31,6 +323,32 @@ helpers.getTileNearby = function(board, distanceFromTop, distanceFromLeft, direc
     return board.tiles[fromTopNew][fromLeftNew];
   } else {
     return false;
+  }
+};
+
+helpers.tileWithMineAndWellAdjacent = function ( gameData ) {
+  var tile, nearestMine, nearestWell, campTile,
+      coords = [0,0],
+      board = gameData.board,
+      hero = gameData.activeHero;
+
+  for ( var x = 0; x < board.lengthOfSide; x++ ) {
+    for ( var y = 0; y < board.lengthOfSide; y++ ) {
+      tile = board.tiles[x][y];
+      nearestMine = helpers.findNearestObjectDirectionAndDistance(board, tile, function( checkingTile ) {
+        return checkingTile.type == "DiamondMine";
+      });
+      nearestWell = helpers.findNearestObjectDirectionAndDistance(board, tile, function( checkingTile ) {
+        return checkingTile.type == "HealthWell";
+      });
+
+      if ( nearestMine && nearestWell && nearestMine.distance == 1 && nearestWell.distance == 1 ) {
+        campTile = helpers.findNearestObjectDirectionAndDistance(board, hero, function( checkingTile ) {
+          return checkingTile.distanceFromTop == tile.distanceFromTop && checkingTile.distanceFromLeft == tile.distanceFromTop;
+        });
+        return campTile;
+      }
+    }
   }
 };
 
@@ -333,6 +651,32 @@ helpers.findNearestNearlyDeadAlly = function(gameData) {
   //Get the path info object
   var pathInfoObject = helpers.findNearestObjectDirectionAndDistance(board, hero, function(heroTile) {
     return heroTile.type === 'Hero' && heroTile.team === hero.team && heroTile.health <= 30;
+  });
+
+  //Return the direction that needs to be taken to achieve the goal
+  return pathInfoObject;
+};
+
+helpers.findNearestInjuredAlly = function(gameData) {
+  var hero = gameData.activeHero;
+  var board = gameData.board;
+
+  //Get the path info object
+  var pathInfoObject = helpers.findNearestObjectDirectionAndDistance(board, hero, function(heroTile) {
+    return heroTile.type === 'Hero' && heroTile.team === hero.team && heroTile.health < 100;
+  });
+
+  //Return the direction that needs to be taken to achieve the goal
+  return pathInfoObject;
+};
+
+helpers.findNearestNearestAlly = function(gameData) {
+  var hero = gameData.activeHero;
+  var board = gameData.board;
+
+  //Get the path info object
+  var pathInfoObject = helpers.findNearestObjectDirectionAndDistance(board, hero, function(heroTile) {
+    return heroTile.type === 'Hero' && heroTile.team === hero.team;
   });
 
   //Return the direction that needs to be taken to achieve the goal

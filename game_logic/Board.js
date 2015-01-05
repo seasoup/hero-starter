@@ -6,12 +6,17 @@ var Board = function(lengthOfSide) {
   this.initializeBoard();
 };
 
-Board.prototype.inspect = function() {
+Board.prototype.inspect = function(callback) {
   var horizontalDivide = '|';
   for (var i=0; i<this.lengthOfSide; i++) {
     var line = '|';
     for (var j=0; j<this.lengthOfSide; j++) {
-      line += this.tiles[i][j].getCode() + '|';
+      if ( callback ) { //&& this.tiles[i][j].getCode() == '   ' ) {
+        line += callback([i,j]) + '|';
+      } else {
+        line += this.tiles[i][j].getCode() + '|';
+      }
+
       if (i === 0) {
         horizontalDivide += '---|';
       }
@@ -36,7 +41,7 @@ Board.prototype.initializeBoard = function() {
 
 // Returns false if the given coordinates are out of range
 Board.prototype.validCoordinates = function(distanceFromTop, distanceFromLeft) {
-  return (!(distanceFromTop < 0 || distanceFromLeft < 0 || 
+  return (!(distanceFromTop < 0 || distanceFromLeft < 0 ||
       distanceFromTop > this.lengthOfSide - 1 || distanceFromLeft > this.lengthOfSide - 1));
 }
 

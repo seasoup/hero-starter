@@ -154,7 +154,6 @@ Game.prototype.handleHeroTurn = function(direction) {
   if (this.ended) {
     return;
   }
-
   //Clear past messages
   this.diamondMessage = '';
   this.moveMessage = '';
@@ -183,7 +182,7 @@ Game.prototype.handleHeroTurn = function(direction) {
 
     // If hero is still alive after moving...
     } else {
-      
+
       // Resolves all damage given and healing received at the
       // end of the hero's turn
       this._resolveHeroAttacks(hero);
@@ -199,6 +198,7 @@ Game.prototype.handleHeroTurn = function(direction) {
 
   //Exceeded maximum turns
   if (this.turn >= this.maxTurn) {
+    console.log( 'Exceeded maximum turns' );
     this.ended = true;
     var teamDiamonds0 = this._teamDiamonds(this.teams[0]);
     var teamDiamonds1 = this._teamDiamonds(this.teams[1]);
@@ -209,12 +209,14 @@ Game.prototype.handleHeroTurn = function(direction) {
     }
   //Team 0 are all dead
   } else if (this._teamIsDead(this.teams[0])) {
+    console.log( 'Team 0 are all dead' );
     this.winningTeam = 1;
     this.maxTurn = this.turn;
     this.ended = true;
 
   //Team 1 are all dead
   } else if (this._teamIsDead(this.teams[1])) {
+    console.log( 'Team 1 are all dead' );
     this.winningTeam = 0;
     this.maxTurn = this.turn;
     this.ended = true;
@@ -395,7 +397,6 @@ Game.prototype._incrementTurn = function() {
       this.heroTurnIndex = 0;
     }
   }.bind(this);
-
   //Goes to next hero
   incrementHeroTurnIndex();
 
