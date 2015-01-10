@@ -79,11 +79,12 @@ var move = function(gameData, helpers) {
 
   //var zones = new Zones( gameData );
   if ( myHealth < 100 ) {
-    return helpers.findNearestHealthWell( gameData );
+    console.log(helpers.findNearestHealthWell( gameData ))
+    return helpers.findNearestHealthWell( gameData ).direction;
   } else if ( helpers.findNearestDiamondMine( gameData ) ) {
-    return helpers.findNearestDiamondMine( gameData );
+    return helpers.findNearestDiamondMine( gameData ).direction;
   } else if ( helpers.findNearestInjuredAlly( gameData ) ) {
-    return helpers.findNearestInjuredAlly( gameData );
+    return helpers.findNearestInjuredAlly( gameData ).direction;
   }
 
 };
