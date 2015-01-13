@@ -11,7 +11,6 @@
 //       southTile = helpers.rateTile( gameData, south ),
 //       east = helpers.getTileNearby(board, dft, dfl, "East"),
 //       eastTile = helpers.rateTile( gameData, east ),
-//       west = helpers.getTileNearby(board, dft, dfl, "West"),
 //       westTile = helpers.rateTile( gameData, west ),
 //       nearbyTiles = [];
 
@@ -78,7 +77,7 @@ var move = function(gameData, helpers) {
       myHealth = myHero.health;
 
   //var zones = new Zones( gameData );
-  if ( myHealth < 100 ) {
+  if ( myHealth < 90 ) {
     console.log(helpers.findNearestHealthWell( gameData ))
     return helpers.findNearestHealthWell( gameData ).direction;
   } else if ( helpers.findNearestDiamondMine( gameData ) ) {
