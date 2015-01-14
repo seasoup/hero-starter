@@ -77,7 +77,7 @@ var move = function(gameData, helpers) {
       myHealth = myHero.health;
 
   //var zones = new Zones( gameData );
-  if ( myHealth < 90 ) {
+  if ( myHealth < 80 ) {
     console.log(helpers.findNearestHealthWell( gameData ))
     return helpers.findNearestHealthWell( gameData ).direction;
   } else if ( helpers.findNearestDiamondMine( gameData ) ) {
