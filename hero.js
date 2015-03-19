@@ -82,8 +82,8 @@ var move = function(gameData, helpers) {
     return helpers.findNearestHealthWell( gameData ).direction;
   } else if ( helpers.findNearestDiamondMine( gameData ) ) {
     return helpers.findNearestDiamondMine( gameData ).direction;
-  } else if ( helpers.findNearestInjuredAlly( gameData ) ) {
-    return helpers.findNearestInjuredAlly( gameData ).direction;
+  } else {
+    // don't move, you own all the diamond mines.
   }
 
 };
